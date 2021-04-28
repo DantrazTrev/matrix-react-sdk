@@ -542,11 +542,13 @@ export default class MessagePanel extends React.Component {
             }
             if (!grouper) {
                 const wantTile = this._shouldShowEvent(mxEv);
+                const isGrouped =false
                 if (wantTile) {
                     // make sure we unpack the array returned by _getTilesForEvent,
                     // otherwise react will auto-generate keys and we will end up
                     // replacing all of the DOM elements every time we paginate.
-                    ret.push(...this._getTilesForEvent(prevEvent, mxEv, last, nextEvent, nextTile));
+                    ret.push(...this._getTilesForEvent(prevEvent, mxEv, last, isGrouped, 
+                        nextEvent, nextTile));
                     prevEvent = mxEv;
                 }
 
@@ -968,6 +970,7 @@ class CreationGrouper {
         const EventListSummary = sdk.getComponent('views.elements.EventListSummary');
         const panel = this.panel;
         const ret = [];
+        const isGrouped=true;
         const createEvent = this.createEvent;
         const lastShownEvent = this.lastShownEvent;
 
@@ -986,7 +989,7 @@ class CreationGrouper {
 
         for (const ejected of this.ejectedEvents) {
             ret.push(...panel._getTilesForEvent(
-                createEvent, ejected, createEvent === lastShownEvent,
+                createEvent, ejected, createEvent === lastShownEvent,isGrouped
             ));
         }
 
@@ -995,7 +998,7 @@ class CreationGrouper {
             // of EventListSummary, render each member event as if the previous
             // one was itself. This way, the timestamp of the previous event === the
             // timestamp of the current event, and no DateSeparator is inserted.
-            return panel._getTilesForEvent(e, e, e === lastShownEvent);
+            return panel._getTilesForEvent(e, e, e === lastShownEvent, isGrouped);
         }).reduce((a, b) => a.concat(b), []);
         // Get sender profile from the latest event in the summary as the m.room.create doesn't contain one
         const ev = this.events[this.events.length - 1];
